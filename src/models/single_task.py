@@ -16,16 +16,16 @@ class BiLSTM(hk.Module):
     def __call__(self, input_ids):
         embds = Embedding(self.config)(input_ids)
 
-        state, forward_embds = jax.lax.scan(lambda prev_state, inputs: self.forward_lstm(inputs, prev_state)[::-1],
-                                            init = self.forward_lstm.initial_state(input_ids.shape[0]), 
-                                            xs = jnp.transpose(embds, axes=(0,1)))
+        state, forward_embds = hk.scan(lambda prev_state, inputs: self.forward_lstm(inputs, prev_state)[::-1],
+                                       init = self.forward_lstm.initial_state(input_ids.shape[0]), 
+                                       xs = jnp.transpose(embds, axes=(1,0,2)))
         
-        state, backward_embds = jax.lax.scan(lambda prev_state, inputs: self.backward_lstm(inputs, prev_state)[::-1],
-                                            init = self.backward_lstm.initial_state(input_ids.shape[0]), 
-                                            xs = jnp.transpose(embds, axes=(0,1)),
-                                            reverse=True)
+        state, backward_embds = hk.scan(lambda prev_state, inputs: self.backward_lstm(inputs, prev_state)[::-1],
+                                        init = self.backward_lstm.initial_state(input_ids.shape[0]), 
+                                        xs = jnp.transpose(embds, axes=(1,0,2)),
+                                        reverse=True)
         
-        return jnp.transpose(jnp.concat(forward_embds, backward_embds), axes=(0,1))
+        return jnp.transpose(jnp.concatenate([forward_embds, backward_embds], axis=-1), axes=(1,0,2))
 
 def get_loss_predict(config, key=jax.random.PRNGKey(42,)):
 
@@ -42,9 +42,9 @@ def get_loss_predict(config, key=jax.random.PRNGKey(42,)):
     key, subkey = jax.random.split(key)
     model_params = transformed_model.init(subkey, token_ids = np.random.randint(config['vocab_size'], size=(config['batch_size'], config['max_length'])),
                                           labels = np.random.randint(len(config['class_names']), size=(config['batch_size'], config['max_length'])))
-    
+  
     loss_fn = jax.jit(lambda params, key, token_ids, labels : transformed_model.apply(params, key, token_ids, labels))
-
+    
     def model(token_ids):
         crf = crf_layer(n_classes=len(config['class_names']), 
                         transition_init=config['transition_init'],
