@@ -13,13 +13,12 @@ class BiLSTM(hk.Module):
 
     def __call__(self, input_ids):
         embds = Embedding(self.config)(input_ids)
-        lstm = hk.LSTM(self.config['d_model']//2)
         
-        state, forward_embds = jax.lax.scan(lambda prev_state, inputs: lstm(inputs, prev_state)[::-1],
+        state, forward_embds = jax.lax.scan(lambda prev_state, inputs: hk.LSTM(self.config['d_model']//2)(inputs, prev_state)[::-1],
                                             init = jnp.ones_like(embds[:,0,:]), 
                                             xs = jnp.transpose(embds, axes=(0,1)))
         
-        state, backward_embds = jax.lax.scan(lambda prev_state, inputs: lstm(inputs, prev_state)[::-1],
+        state, backward_embds = jax.lax.scan(lambda prev_state, inputs: hk.LSTM(self.config['d_model']//2)(inputs, prev_state)[::-1],
                                             init = jnp.ones_like(embds[:,0,:]), 
                                             xs = jnp.transpose(embds, axes=(0,1)),\
                                             reverse=True)
