@@ -31,7 +31,7 @@ def get_loss_predict(config, key=jax.random.PRNGKey(42,)):
 
     def model(token_ids, labels):
         crf = crf_layer(n_classes=len(config['class_names']), 
-                        transition_init=config['transition_init'],
+                        transition_init=hk.initializers.Constant(config['transition_init']),
                         scale_factors=config['scale_factors'],
                         init_alphas=config['init_alphas'])
         
@@ -47,7 +47,7 @@ def get_loss_predict(config, key=jax.random.PRNGKey(42,)):
     
     def model(token_ids):
         crf = crf_layer(n_classes=len(config['class_names']), 
-                        transition_init=config['transition_init'],
+                        transition_init=hk.initializers.Constant(config['transition_init']),
                         scale_factors=config['scale_factors'],
                         init_alphas=config['init_alphas'])
         

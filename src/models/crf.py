@@ -137,7 +137,7 @@ class crf_layer(hk.Module):
         """
         transition_matrix = hk.get_parameter("transition_matrix", 
                                              [self.n_classes, self.n_classes], 
-                                             init=hk.initializers.Constant(self.transition_init))*self.scale_factors
+                                             init=self.transition_init)*self.scale_factors
         
         batch_score_fn = jax.vmap(lambda logits: self.sum_scores(transition_matrix, logits),
                                   in_axes=(0,), out_axes=0)
@@ -160,7 +160,7 @@ class crf_layer(hk.Module):
         """
         transition_matrix = hk.get_parameter("transition_matrix", 
                                              [self.n_classes, self.n_classes], 
-                                             init=hk.initializers.Constant(self.transition_init))*self.scale_factors
+                                             init=self.transition_init)*self.scale_factors
         
         batch_seq_score_fn = jax.vmap(lambda logits, tags: self.score_sequence(transition_matrix, logits, tags),
                                       in_axes=(0,0), out_axes=0)
@@ -184,7 +184,7 @@ class crf_layer(hk.Module):
         """
         transition_matrix = hk.get_parameter("transition_matrix", 
                                              [self.n_classes, self.n_classes], 
-                                             init=hk.initializers.Constant(self.transition_init))*self.scale_factors
+                                             init=self.transition_init)*self.scale_factors
         
         batch_decode_fn = jax.vmap(lambda logits: self.viterbi_decode(transition_matrix, logits),
                                    in_axes=(0), out_axes=(0,0))
