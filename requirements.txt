@@ -6,17 +6,3 @@ transformers
 tokenizers==0.10.0
 git+https://github.com/deepmind/dm-haiku
 git+git://github.com/deepmind/optax.git
-
-config -> max_length, class_names, ft_data_folders, max_tree_size, max_labelled_users_per_tree, pt_hf_tokenizer, batch_size
-    
-    config['vocab_size'] = lm_tokeniser.tokenizer.get_vocab_size()
-
-    #Tokenization ids  
-    config['mask_id'] = lm_tokeniser.tokenizer.token_to_id("<mask>")
-    config['pad_id'] = lm_tokeniser.tokenizer.token_to_id("<pad>")
-    config['sos_id'] = lm_tokeniser.tokenizer.token_to_id("<s>")
-    config['eos_id'] = lm_tokeniser.tokenizer.token_to_id("</s>")
-    config['dsm_list'] = [lm_tokeniser.tokenizer.token_to_id(token)
-                                for token in lm_tokeniser.dms]
-    config['total_steps'] = len([0 for thread in train_data_loader.thread_generator()])
-    
