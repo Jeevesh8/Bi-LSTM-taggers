@@ -10,6 +10,6 @@ def get_dataloaders(config):
     
     config['total_steps'] = len([0 for thread in train_data_loader.thread_generator()])
 
-    print("Total steps: ", config['total_steps'])    
+    print("Total training steps: ", config['total_steps'])    
     
     return train_data_loader, valid_data_loader, test_data_loader, config

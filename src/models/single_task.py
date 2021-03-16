@@ -55,4 +55,4 @@ def get_loss_predict(config, key=jax.random.PRNGKey(42,)):
     transformed_model = hk.transform(model)
     predict_fn = jax.jit(lambda params, key, token_ids : transformed_model.apply(params, key, token_ids))
 
-    return loss_fn, predict_fn
+    return model_params, loss_fn, predict_fn
