@@ -39,7 +39,7 @@ def get_loss_predict(config, key=jax.random.PRNGKey(42,)):
     transformed_model = hk.transform(model)
     key, subkey = jax.random.split(key)
     model_params = transformed_model.init(subkey, token_ids = np.random.randint(config['vocab_size'], size=(config['batch_size'], config['max_length'])),
-                                          labels = np.random.randint(len(config['class_names'], size=(config['batch_size'], config['max_length']))))
+                                          labels = np.random.randint(len(config['class_names']), size=(config['batch_size'], config['max_length']))))
     
     loss_fn = jax.jit(lambda params, key, token_ids, labels : transformed_model.apply(params, key, token_ids, labels))
 
