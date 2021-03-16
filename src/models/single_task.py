@@ -4,7 +4,7 @@ import jax.numpy as jnp
 import haiku as hk
 
 from src.models.crf import crf_layer
-from embeddings import Embedding
+from src.models.embeddings import Embedding
 
 class BiLSTM(hk.Module):
     def __init__(self, config):
