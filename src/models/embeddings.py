@@ -41,7 +41,7 @@ class PositionEmbeddings(hk.Module):
     def __init__(self, config):
         super().__init__()
         self.config = config
-        self.offset = 2 if 'roberta' in self.config['initialize_pretrained'] else 0
+        self.offset = 2 #if 'roberta' in self.config['initialize_pretrained'] else 0
 
     def get_init_pe(self):
         
