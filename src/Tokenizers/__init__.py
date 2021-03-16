@@ -1,7 +1,7 @@
 from src.Tokenizers.thread_tokenizer import Thread_Tokenizer
 from transformers import RobertaTokenizer
 
-def update_config(config):
+def update_config(lm_tokeniser, config):
     print("Vocabulary : ", lm_tokeniser.tokenizer.get_vocab())
 
     config['vocab_size'] = lm_tokeniser.tokenizer.get_vocab_size()
@@ -21,4 +21,4 @@ def update_config(config):
 def get_tokenizer(config):
     config['pt_hf_tokenizer'] = RobertaTokenizer.from_pretrained('distilroberta-base')
     lm_tokeniser = Thread_Tokenizer(config)
-    return lm_tokeniser, update_config(config)
+    return lm_tokeniser, update_config(lm_tokeniser, config)
