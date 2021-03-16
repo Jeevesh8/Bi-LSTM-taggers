@@ -38,12 +38,12 @@ def get_loss_predict(config, key=jax.random.PRNGKey(42,)):
         emmision_logits = hk.Linear(len(config['class_names']))(BiLSTM(config)(token_ids))
         return crf(emmision_logits, jnp.sum(token_ids!=config['pad_id'], axis=-1), labels)
     
-    transformed_model = hk.transform(model_fn)
+    transformed_model_fn = hk.transform(model_fn)
     key, subkey = jax.random.split(key)
-    model_params = transformed_model.init(subkey, token_ids = np.random.randint(config['vocab_size'], size=(config['batch_size'], config['max_length'])),
-                                          labels = np.random.randint(len(config['class_names']), size=(config['batch_size'], config['max_length'])))
+    model_params = transformed_model_fn.init(subkey, token_ids = np.random.randint(config['vocab_size'], size=(config['batch_size'], config['max_length'])),
+                                             labels = np.random.randint(len(config['class_names']), size=(config['batch_size'], config['max_length'])))
   
-    loss_fn = jax.jit(lambda params, key, token_ids, labels : transformed_model.apply(params, key, token_ids, labels))
+    loss_fn = jax.jit(lambda params, key, token_ids, labels : transformed_model_fn.apply(params, key, token_ids, labels))
     
     def model(token_ids):
         crf = crf_layer(n_classes=len(config['class_names']), 
