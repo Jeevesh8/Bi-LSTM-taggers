@@ -8,4 +8,8 @@ def get_dataloaders(config):
 
     test_data_loader = load_xml_data(config, split='test/')
     
-    return train_data_loader, valid_data_loader, test_data_loader
+    config['total_steps'] = len([0 for thread in train_data_loader.thread_generator()])
+
+    print("Total steps: ", config['total_steps'])    
+    
+    return train_data_loader, valid_data_loader, test_data_loader, config

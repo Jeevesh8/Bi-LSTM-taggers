@@ -13,8 +13,6 @@ def update_config(lm_tokeniser, config):
     config['eos_id'] = lm_tokeniser.tokenizer.token_to_id("</s>")
     config['dsm_list'] = [lm_tokeniser.tokenizer.token_to_id(token)
                                 for token in lm_tokeniser.dms]
-    config['total_steps'] = len([0 for thread in train_data_loader.thread_generator()])
-    print("Total steps: ", config['total_steps'])
 
     return config
 
