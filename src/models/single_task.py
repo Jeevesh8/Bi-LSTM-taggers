@@ -29,7 +29,7 @@ class BiLSTM(hk.Module):
 
 def get_loss_predict(config, key=jax.random.PRNGKey(42,)):
 
-    def model(token_ids, labels):
+    def model_fn(token_ids, labels):
         crf = crf_layer(n_classes=len(config['class_names']), 
                         transition_init=hk.initializers.Constant(config['transition_init']),
                         scale_factors=config['scale_factors'],
@@ -38,7 +38,7 @@ def get_loss_predict(config, key=jax.random.PRNGKey(42,)):
         emmision_logits = hk.Linear(len(config['class_names']))(BiLSTM(config)(token_ids))
         return crf(emmision_logits, jnp.sum(token_ids!=config['pad_id'], axis=-1), labels)
     
-    transformed_model = hk.transform(model)
+    transformed_model = hk.transform(model_fn)
     key, subkey = jax.random.split(key)
     model_params = transformed_model.init(subkey, token_ids = np.random.randint(config['vocab_size'], size=(config['batch_size'], config['max_length'])),
                                           labels = np.random.randint(len(config['class_names']), size=(config['batch_size'], config['max_length'])))
