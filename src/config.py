@@ -17,4 +17,6 @@ config = {
     'scale_factors':[1.0, 10.0, 10.0, 1.0, 1.0],
     
     'n_epochs' :10,
+    'max_grad_norm': 1.0,
+    'learning_rate':0.0001,
 }
