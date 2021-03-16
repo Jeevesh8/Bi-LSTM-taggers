@@ -10,17 +10,19 @@ class BiLSTM(hk.Module):
     def __init__(self, config):
         super().__init__()
         self.config = config
-
+        self.forward_lstm = hk.LSTM(self.config['d_model']//2)
+        self.backward_lstm = hk.LSTM(self.config['d_model']//2)
+    
     def __call__(self, input_ids):
         embds = Embedding(self.config)(input_ids)
-        
-        state, forward_embds = jax.lax.scan(lambda prev_state, inputs: hk.LSTM(self.config['d_model']//2)(inputs, prev_state)[::-1],
-                                            init = jnp.ones_like(embds[:,0,:]), 
+
+        state, forward_embds = jax.lax.scan(lambda prev_state, inputs: self.forward_lstm(inputs, prev_state)[::-1],
+                                            init = self.forward_lstm.initial_state(inputs.shape[0]), 
                                             xs = jnp.transpose(embds, axes=(0,1)))
         
-        state, backward_embds = jax.lax.scan(lambda prev_state, inputs: hk.LSTM(self.config['d_model']//2)(inputs, prev_state)[::-1],
-                                            init = jnp.ones_like(embds[:,0,:]), 
-                                            xs = jnp.transpose(embds, axes=(0,1)),\
+        state, backward_embds = jax.lax.scan(lambda prev_state, inputs: self.backward_lstm(inputs, prev_state)[::-1],
+                                            init = self.backward_lstm.initial_state(inputs.shape[0]), 
+                                            xs = jnp.transpose(embds, axes=(0,1)),
                                             reverse=True)
         
         return jnp.transpose(jnp.concat(forward_embds, backward_embds), axes=(0,1))
