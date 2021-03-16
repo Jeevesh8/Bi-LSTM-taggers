@@ -35,7 +35,7 @@ def get_loss_predict(config, key=jax.random.PRNGKey(42,)):
                         scale_factors=config['scale_factors'],
                         init_alphas=config['init_alphas'])
         
-        emmision_logits = BiLSTM(config)(token_ids)
+        emmision_logits = hk.Linear(len(config['class_names']))(BiLSTM(config)(token_ids))
         return crf(emmision_logits, jnp.sum(token_ids!=config['pad_id'], axis=-1), labels)
     
     transformed_model = hk.transform(model)
