@@ -17,11 +17,11 @@ class BiLSTM(hk.Module):
         embds = Embedding(self.config)(input_ids)
 
         state, forward_embds = jax.lax.scan(lambda prev_state, inputs: self.forward_lstm(inputs, prev_state)[::-1],
-                                            init = self.forward_lstm.initial_state(inputs.shape[0]), 
+                                            init = self.forward_lstm.initial_state(inputs_ids.shape[0]), 
                                             xs = jnp.transpose(embds, axes=(0,1)))
         
         state, backward_embds = jax.lax.scan(lambda prev_state, inputs: self.backward_lstm(inputs, prev_state)[::-1],
-                                            init = self.backward_lstm.initial_state(inputs.shape[0]), 
+                                            init = self.backward_lstm.initial_state(inputs_ids.shape[0]), 
                                             xs = jnp.transpose(embds, axes=(0,1)),
                                             reverse=True)
         
