@@ -3,7 +3,7 @@ import numpy as np
 import jax.numpy as jnp
 import haiku as hk
 
-from src.crf import crf_layer
+from src.models.crf import crf_layer
 from embeddings import Embedding
 
 class BiLSTM(hk.Module):
