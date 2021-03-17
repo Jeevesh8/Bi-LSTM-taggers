@@ -10,8 +10,8 @@ class BiLSTM(hk.Module):
     def __init__(self, config):
         super().__init__()
         self.config = config
-        self.forward_lstm = hk.DeepRNN([hk.LSTM(self.config['d_model']//2)]*self.config['n_layers'])
-        self.backward_lstm = hk.DeepRNN([hk.LSTM(self.config['d_model']//2)]*self.config['n_layers'])
+        self.forward_lstm = hk.DeepRNN([hk.LSTM(self.config['d_model']//2) for i in range(self.config['n_layers'])])
+        self.backward_lstm = hk.DeepRNN([hk.LSTM(self.config['d_model']//2) for i in range(self.config['n_layers'])])
     
     def __call__(self, input_ids):
         embds = Embedding(self.config)(input_ids)
