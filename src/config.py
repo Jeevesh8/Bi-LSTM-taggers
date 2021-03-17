@@ -19,4 +19,6 @@ config = {
     'n_epochs' :10,
     'max_grad_norm': 1.0,
     'learning_rate':0.0001,
+
+    'n_layers' : 5,
 }
