@@ -1,5 +1,7 @@
 beautifulsoup4
 lxml
+wandb
+pandas
 scikit-learn
 seqeval
 transformers
