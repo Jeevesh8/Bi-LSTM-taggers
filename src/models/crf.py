@@ -71,9 +71,7 @@ class crf_layer(hk.Module):
             scores of all sequences of length (i+1).
         """
         scan_fn = lambda prev_alphas, logit_t: (self.core_recursion(logsumexp, transition_matrix, prev_alphas, logit_t),)*2
-        alphas = lax.scan(scan_fn, init=self.init_alphas+logits[0,:]
-                                        +jnp.sum(transition_matrix, axis=1), 
-                                        xs=logits[1:])
+        alphas = lax.scan(scan_fn, init=self.init_alphas+logits[0,:], xs=logits[1:])
         return jnp.sum(alphas[1], -1)
     
     def score_sequence(self,
@@ -90,7 +88,7 @@ class crf_layer(hk.Module):
         Returns:
             A tensor of size [T,] where the i-th entry contains the score of sequence of the first (i+1) tags.
         """
-        first_tag_score = self.init_alphas[tags[0]]+logits[0, tags[0]]+jnp.sum(transition_matrix[tags[0],:])
+        first_tag_score = self.init_alphas[tags[0]]+logits[0, tags[0]]
         scan_fn = lambda prev_score, i: (prev_score + transition_matrix[tags[i+1]][tags[i]] + logits[i+1, tags[i+1]],)*2
         final_scores = lax.scan(scan_fn, init=first_tag_score, xs=jnp.arange(logits.shape[0]-1))
         return final_scores[1]
@@ -112,7 +110,7 @@ class crf_layer(hk.Module):
                                t-th position in the max. scoring sequence of length (t+1) ending at class label i.
                                The 0-th entry of this tensor is to be discarded away.
         """
-        prev_alphas = self.init_alphas+logits[0,:]+jnp.sum(transition_matrix, axis=1)
+        prev_alphas = self.init_alphas+logits[0,:]
 
         scores_lis = [prev_alphas]
         tags_lis = [jnp.asarray([jnp.argmax(prev_alphas)]*self.n_classes)]
